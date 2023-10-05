@@ -1,18 +1,19 @@
 package com.bolsadeideas.bolsadeideas.services.interfaces;
 
 import com.bolsadeideas.bolsadeideas.models.entity.Cliente;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IClienteService{
-    List<Cliente> findAll();
+    ResponseEntity findAll();
 
-    Cliente save(Cliente cliente);
+    ResponseEntity save(Cliente cliente);
 
-    Cliente findById(Long id);
+    ResponseEntity findById(Long id);
 
-    void delete(Long id);
+    ResponseEntity delete(Long id);
 
-    Cliente updateCliente(Cliente cliente, Long id);
+    ResponseEntity updateCliente(Cliente cliente, Long id);
 }

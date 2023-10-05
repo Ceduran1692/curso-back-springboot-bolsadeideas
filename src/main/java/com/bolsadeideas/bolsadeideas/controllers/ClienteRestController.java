@@ -4,6 +4,7 @@ import com.bolsadeideas.bolsadeideas.models.entity.Cliente;
 import com.bolsadeideas.bolsadeideas.services.interfaces.IClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,28 +18,27 @@ public class ClienteRestController {
     private IClienteService clienteService;
 
     @GetMapping("")
-    List<Cliente> findAll(){
+    ResponseEntity findAll(){
         return clienteService.findAll();
     }
 
     @GetMapping("/{id}")
-    Cliente findById(@PathVariable Long id){
+    ResponseEntity findById(@PathVariable Long id){
         return clienteService.findById(id);
     }
 
     @PostMapping("")
-    @ResponseStatus(HttpStatus.CREATED)
-    Cliente create(@RequestBody Cliente cliente){
+    ResponseEntity create(@RequestBody Cliente cliente){
         return clienteService.save(cliente);
     }
 
     @DeleteMapping("/{id}")
-    void delete(@PathVariable Long id){
-        clienteService.delete(id);
+    ResponseEntity delete(@PathVariable Long id){
+        return clienteService.delete(id);
     }
 
     @PutMapping("/{id}")
-    Cliente update(@RequestBody Cliente cliente,@PathVariable Long id){
+    ResponseEntity update(@RequestBody Cliente cliente,@PathVariable Long id){
         return clienteService.updateCliente(cliente, id);
     }
 }
