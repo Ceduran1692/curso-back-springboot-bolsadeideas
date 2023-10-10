@@ -29,10 +29,10 @@ public class ClienteService implements IClienteService {
         HttpStatus status;
         try {
            List<Cliente> lista = (List<Cliente>) clientedao.findAll();
-
+           log.info("cantidad de clientes: "+ lista.size());
            if (lista.size() > 0) {
                 status= HttpStatus.OK;
-                response.put("clientes",lista);
+                response.put("value",lista);
            }else{
                msg= "No existen clientes en la base de dato";
                status= HttpStatus.NOT_FOUND;
@@ -61,7 +61,7 @@ public class ClienteService implements IClienteService {
         try {
             Cliente clienteNew = clientedao.save(cliente);
             status= HttpStatus.CREATED;
-            response.put("cliente",clienteNew);
+            response.put("value",clienteNew);
 
         }catch (Exception e){
             msg= "Error al realizar el impacto en la base de datos, Error:";
@@ -87,7 +87,7 @@ public class ClienteService implements IClienteService {
 
             if (cliente != null) {
                 status= HttpStatus.OK;
-                response.put("cliente",cliente);
+                response.put("value",cliente);
             }else{
                 msg= "No existe el cliente con id: "+id+" en la base de dato";
                 status= HttpStatus.NOT_FOUND;
@@ -118,7 +118,7 @@ public class ClienteService implements IClienteService {
             if (cliente != null) {
                 clientedao.delete(cliente);
                 status= HttpStatus.OK;
-                response.put("cliente",cliente);
+                response.put("value",cliente);
             }else{
                 msg= "No existe el cliente con id: "+id+" en la base de dato";
                 status= HttpStatus.NOT_FOUND;
@@ -151,7 +151,7 @@ public class ClienteService implements IClienteService {
                 cliActual.setEmail(cliente.getEmail());
                 cliActual= clientedao.save(cliActual);
                 status= HttpStatus.OK;
-                response.put("cliente",cliActual);
+                response.put("value",cliActual);
             }else{
                 msg= "No existe el cliente con id: "+id+" en la base de dato";
                 status= HttpStatus.NOT_FOUND;
