@@ -9,10 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -53,25 +57,36 @@ public class ClienteService implements IClienteService {
 
     @Override
     @Transactional
-    public ResponseEntity save(Cliente cliente) {
+    public ResponseEntity save(Cliente cliente, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         String msg;
         String error;
         HttpStatus status;
-        try {
-            Cliente clienteNew = clientedao.save(cliente);
-            status= HttpStatus.CREATED;
-            response.put("value",clienteNew);
+        if(result.hasErrors()){
+            List<String> errors= new ArrayList<>();
 
-        }catch (Exception e){
-            msg= "Error al realizar el impacto en la base de datos, Error:";
-            error= e.getMessage();
-            status= HttpStatus.INTERNAL_SERVER_ERROR;
-
+            for(FieldError err: result.getFieldErrors()) {
+                errors.add("El campo "+ err.getField() +": "+err.getDefaultMessage());
+            }
+            status = HttpStatus.BAD_REQUEST;
+            msg= "Error al realizar la validacion de datos";
             response.put("mensaje", msg);
-            response.put("error", error);
-        }
+            response.put("error", errors);
+        }else {
+            try {
+                Cliente clienteNew = clientedao.save(cliente);
+                status = HttpStatus.CREATED;
+                response.put("value", clienteNew);
 
+            } catch (Exception e) {
+                msg = "Error al realizar el impacto en la base de datos, Error:";
+                error = e.getMessage();
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+                response.put("mensaje", msg);
+                response.put("error", error);
+            }
+        }
         return new ResponseEntity<Map<String, Object>>(response,status);
 
     }
@@ -137,33 +152,46 @@ public class ClienteService implements IClienteService {
     }
 
     @Override
-    public ResponseEntity updateCliente(Cliente cliente, Long id) {
+    public ResponseEntity updateCliente(Cliente cliente, Long id, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
         String msg;
         String error;
         HttpStatus status;
-        try {
-            Cliente cliActual= clientedao.findById(id).get();
 
-            if (cliActual != null) {
-                cliActual.setNombre(cliente.getNombre());
-                cliActual.setApellido(cliente.getApellido());
-                cliActual.setEmail(cliente.getEmail());
-                cliActual= clientedao.save(cliActual);
-                status= HttpStatus.OK;
-                response.put("value",cliActual);
-            }else{
-                msg= "No existe el cliente con id: "+id+" en la base de dato";
-                status= HttpStatus.NOT_FOUND;
-                response.put("mensaje",msg);
-            }
-        }catch (Exception e){
-            msg= "Error al realizar la consulta a la base de datos, Error:";
-            error= e.getMessage();
-            status= HttpStatus.INTERNAL_SERVER_ERROR;
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(err -> "El campo " + err.getField() + ": " + err.getDefaultMessage())
+                    .collect(Collectors.toList());
 
+            status = HttpStatus.BAD_REQUEST;
+            msg = "Error al realizar la validacion de datos";
             response.put("mensaje", msg);
-            response.put("error", error);
+            response.put("error", errors);
+        } else {
+            try {
+                Cliente cliActual = clientedao.findById(id).get();
+
+                if (cliActual != null) {
+                    cliActual.setNombre(cliente.getNombre());
+                    cliActual.setApellido(cliente.getApellido());
+                    cliActual.setEmail(cliente.getEmail());
+                    cliActual = clientedao.save(cliActual);
+                    status = HttpStatus.OK;
+                    response.put("value", cliActual);
+                } else {
+                    msg = "No existe el cliente con id: " + id + " en la base de dato";
+                    status = HttpStatus.NOT_FOUND;
+                    response.put("mensaje", msg);
+                }
+            } catch (Exception e) {
+                msg = "Error al realizar la consulta a la base de datos, Error:";
+                error = e.getMessage();
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+                response.put("mensaje", msg);
+                response.put("error", error);
+            }
         }
         return new ResponseEntity<Map<String, Object>>(response,status);
 

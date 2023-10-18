@@ -5,8 +5,10 @@ import com.bolsadeideas.bolsadeideas.services.interfaces.IClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -28,8 +30,8 @@ public class ClienteRestController {
     }
 
     @PostMapping("")
-    ResponseEntity create(@RequestBody Cliente cliente){
-        return clienteService.save(cliente);
+    ResponseEntity create(@Valid @RequestBody Cliente cliente, BindingResult result){
+        return clienteService.save(cliente, result);
     }
 
     @DeleteMapping("/{id}")
@@ -38,7 +40,7 @@ public class ClienteRestController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity update(@RequestBody Cliente cliente,@PathVariable Long id){
-        return clienteService.updateCliente(cliente, id);
+    ResponseEntity update(@Valid @RequestBody Cliente cliente,@PathVariable Long id, BindingResult result){
+        return clienteService.updateCliente(cliente, id, result);
     }
 }

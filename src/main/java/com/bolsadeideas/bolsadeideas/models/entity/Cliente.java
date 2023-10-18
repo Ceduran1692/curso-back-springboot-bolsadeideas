@@ -1,6 +1,9 @@
 package com.bolsadeideas.bolsadeideas.models.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,8 +15,17 @@ public class Cliente implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "El campo nombre no puede ser vacio")
+    @Size(min = 3, max = 50)
     private String nombre;
+
+    @NotEmpty(message = "El campo apellido no puede ser vacio")
+    @Column(nullable = false )
     private String apellido;
+
+    @NotEmpty(message = "El campo email no puede ser vacio")
+    @Email
+    @Column(nullable = false,length = 4)
     private String email;
 
     @Column(name="create_at")
