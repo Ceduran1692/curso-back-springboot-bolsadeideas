@@ -5,17 +5,21 @@ import com.bolsadeideas.bolsadeideas.models.entity.Cliente;
 import com.bolsadeideas.bolsadeideas.services.interfaces.IClienteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,6 +57,36 @@ public class ClienteService implements IClienteService {
 
         return new ResponseEntity<Map<String, Object>>(response,status);
 
+    }
+
+    @Override
+    public ResponseEntity findAll(int page) {
+        Map<String, Object> response = new HashMap<>();
+        String msg;
+        String error;
+        HttpStatus status;
+        try {
+           Page<Cliente> lista =  clientedao.findAll(PageRequest.of(page,4));
+            log.info("cantidad de clientes: "+ lista.getTotalPages());
+            if (lista.toList().size() > 0) {
+                status= HttpStatus.OK;
+                response.put("value",lista);
+            }else{
+                log.info("entre al else");
+                msg= "No existen clientes en la base de dato";
+                status= HttpStatus.NOT_FOUND;
+                response.put("mensaje",msg);
+            }
+        }catch (Exception e){
+            msg= "Error al realizar la consulta a la base de datos, Error:";
+            error= e.getMessage();
+            status= HttpStatus.INTERNAL_SERVER_ERROR;
+
+            response.put("mensaje", msg);
+            response.put("error", error);
+        }
+
+        return new ResponseEntity<Map<String, Object>>(response,status);
     }
 
     @Override
@@ -196,4 +230,51 @@ public class ClienteService implements IClienteService {
         return new ResponseEntity<Map<String, Object>>(response,status);
 
     }
+
+    @Override
+    public ResponseEntity upload(MultipartFile archivo, Long id) {
+        Map<String, Object> response = new HashMap<>();
+        String msg;
+        String error;
+        HttpStatus status;
+        try {
+            if (!archivo.isEmpty()){
+                Cliente cliente = clientedao.findById(id).get();
+                if(cliente != null){
+                    String nombreArchivo = UUID.randomUUID()+"_"+archivo.getOriginalFilename().replace(" ","");
+                    Path ruta = Paths.get("C:\\Users\\Carlos\\Educacion\\Cursos\\Spring-Angular\\Angular_Spring_Gabriel-Guzman\\Seccion_2\\uploads").resolve(nombreArchivo).toAbsolutePath();
+
+                    Files.copy(archivo.getInputStream(), ruta);
+
+                    cliente.setFoto(nombreArchivo);
+                    clientedao.save(cliente);
+                    status = HttpStatus.OK;
+                    response.put("value", cliente);
+                }else{
+                    msg= "No existe el cliente con id: "+id+" en la base de dato";
+                    status= HttpStatus.NOT_FOUND;
+                    response.put("mensaje",msg);
+                }
+            }else{
+                msg= "No existen archivos para procesar";
+                status= HttpStatus.NOT_FOUND;
+                response.put("mensaje",msg);
+            }
+        }catch(IOException e){
+            msg= "Error al realizar el upload del archivo, Error:";
+            error= e.getMessage();
+            status= HttpStatus.INTERNAL_SERVER_ERROR;
+
+            response.put("mensaje", msg);
+            response.put("error", error);
+        }catch (Exception e){
+            msg= "Error al realizar la consulta a la base de datos, Error:";
+            error= e.getMessage();
+            status= HttpStatus.INTERNAL_SERVER_ERROR;
+
+            response.put("mensaje", msg);
+            response.put("error", error);
+        }
+
+        return new ResponseEntity<Map<String, Object>>(response,status);    }
 }

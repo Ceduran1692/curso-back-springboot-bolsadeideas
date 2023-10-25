@@ -3,6 +3,7 @@ package com.bolsadeideas.bolsadeideas.models.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
@@ -25,14 +26,25 @@ public class Cliente implements Serializable {
 
     @NotEmpty(message = "El campo email no puede ser vacio")
     @Email
-    @Column(nullable = false,length = 4)
+    @Column(nullable = false)
     private String email;
 
+    @NotNull(message = "El campo no puede ser nulo")
     @Column(name="create_at")
     @Temporal(TemporalType.DATE)
     private Date createAt;
 
-    @PrePersist
+    private String foto;
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
+    //@PrePersist
     void prePersist(){
         createAt = new Date();
     }

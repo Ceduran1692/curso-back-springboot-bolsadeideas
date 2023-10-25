@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -22,6 +23,11 @@ public class ClienteRestController {
     @GetMapping("")
     ResponseEntity findAll(){
         return clienteService.findAll();
+    }
+
+    @GetMapping("/page/{page}")
+    ResponseEntity findAll(@PathVariable int page){
+        return clienteService.findAll(page);
     }
 
     @GetMapping("/{id}")
@@ -42,5 +48,10 @@ public class ClienteRestController {
     @PutMapping("/{id}")
     ResponseEntity update(@Valid @RequestBody Cliente cliente,@PathVariable Long id, BindingResult result){
         return clienteService.updateCliente(cliente, id, result);
+    }
+
+    @PostMapping("/upload")
+    ResponseEntity upload(@RequestParam("archivo")MultipartFile archivo, @RequestParam("id") Long id){
+        return clienteService.upload(archivo,id);
     }
 }
