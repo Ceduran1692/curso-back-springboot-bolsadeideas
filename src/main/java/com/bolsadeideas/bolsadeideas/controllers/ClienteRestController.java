@@ -3,6 +3,7 @@ package com.bolsadeideas.bolsadeideas.controllers;
 import com.bolsadeideas.bolsadeideas.models.entity.Cliente;
 import com.bolsadeideas.bolsadeideas.services.interfaces.IClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -54,4 +55,9 @@ public class ClienteRestController {
     ResponseEntity upload(@RequestParam("archivo")MultipartFile archivo, @RequestParam("id") Long id){
         return clienteService.upload(archivo,id);
     }
+    @GetMapping("/upload/img/{nombreFoto:.+}")
+    ResponseEntity<Resource> verfoto(@PathVariable("nombreFoto") String nombreFoto){
+        return clienteService.verFoto(nombreFoto);
+    }
+
 }
