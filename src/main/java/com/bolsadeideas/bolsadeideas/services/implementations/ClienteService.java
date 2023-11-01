@@ -2,6 +2,7 @@ package com.bolsadeideas.bolsadeideas.services.implementations;
 
 import com.bolsadeideas.bolsadeideas.models.dao.IClienteDao;
 import com.bolsadeideas.bolsadeideas.models.entity.Cliente;
+import com.bolsadeideas.bolsadeideas.models.entity.Region;
 import com.bolsadeideas.bolsadeideas.services.interfaces.IClienteService;
 import com.bolsadeideas.bolsadeideas.services.interfaces.IUploadFileService;
 import lombok.extern.slf4j.Slf4j;
@@ -317,6 +318,37 @@ public class ClienteService implements IClienteService {
         }
 
         return new ResponseEntity<Resource>(recurso,cabecera,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity getAllRegions() {
+        Map<String, Object> response = new HashMap<>();
+        String msg;
+        String error;
+        HttpStatus status;
+        try {
+            List<Region> lista = (List<Region>) clientedao.findAllRegiones();
+            log.info("cantidad de regiones: "+ lista.size());
+            lista.forEach(region -> log.info(region.toString()));
+
+            if (lista.size() > 0) {
+                status= HttpStatus.OK;
+                response.put("value",lista);
+            }else{
+                msg= "No existen regiones en la base de dato";
+                status= HttpStatus.NOT_FOUND;
+                response.put("mensaje",msg);
+            }
+        }catch (Exception e){
+            msg= "Error al realizar la consulta a la base de datos, Error:";
+            error= e.getMessage();
+            status= HttpStatus.INTERNAL_SERVER_ERROR;
+
+            response.put("mensaje", msg);
+            response.put("error", error);
+        }
+
+        return new ResponseEntity<Map<String, Object>>(response,status);
     }
 
     void deleteFoto(Cliente cliente){

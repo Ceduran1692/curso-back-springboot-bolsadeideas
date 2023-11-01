@@ -25,4 +25,6 @@ public interface IClienteService{
     ResponseEntity upload(MultipartFile archivo, Long id);
 
     ResponseEntity verFoto(String nombreFoto);
+
+    ResponseEntity getAllRegions();
 }

@@ -1,5 +1,7 @@
 package com.bolsadeideas.bolsadeideas.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -35,6 +37,12 @@ public class Cliente implements Serializable {
     private Date createAt;
 
     private String foto;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    @NotNull(message = "La region no puede ser nula")
+    @JsonIgnoreProperties({"HibernateLazyInitializer","handler"})
+    private Region region;
 
     public String getFoto() {
         return foto;

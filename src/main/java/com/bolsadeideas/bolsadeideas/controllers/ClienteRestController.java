@@ -60,4 +60,8 @@ public class ClienteRestController {
         return clienteService.verFoto(nombreFoto);
     }
 
+    @GetMapping("/regiones")
+    ResponseEntity getAllRegiones(){
+        return clienteService.getAllRegions();
+    }
 }
