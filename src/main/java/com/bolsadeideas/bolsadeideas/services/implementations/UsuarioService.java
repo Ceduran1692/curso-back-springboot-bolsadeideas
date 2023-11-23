@@ -2,6 +2,7 @@ package com.bolsadeideas.bolsadeideas.services.implementations;
 
 import com.bolsadeideas.bolsadeideas.models.dao.IUsuarioDao;
 import com.bolsadeideas.bolsadeideas.models.entity.Usuario;
+import com.bolsadeideas.bolsadeideas.services.interfaces.IUsuarioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,13 +12,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class UsuarioService implements UserDetailsService {
+public class UsuarioService implements UserDetailsService, IUsuarioService {
 
     @Autowired
     private IUsuarioDao usuarioDao;
@@ -33,11 +35,13 @@ public class UsuarioService implements UserDetailsService {
             throw  new UsernameNotFoundException(mensaje);
         }
 
-        List<GrantedAuthority> authorities= usuario.getRoles().stream()
-                                                                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                                                                .peek(auth -> log.info("role "+ auth.getAuthority()))
-                                                                .collect(Collectors.toList());
+        return usuario;
+    }
 
-        return new User(usuario.getUsername(),usuario.getPassword(),usuario.isEnable(),true,true,true,authorities);
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario findUserByUsername(String username) {
+        return usuarioDao.findByUsername(username).get();
     }
 }
