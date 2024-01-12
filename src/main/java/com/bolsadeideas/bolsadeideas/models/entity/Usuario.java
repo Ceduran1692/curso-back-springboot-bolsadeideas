@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Data
 @Entity
 @Table(name = "usuarios")
-public class Usuario implements Serializable, UserDetails {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +52,7 @@ public class Usuario implements Serializable, UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities= this.getRoles().stream()
+        List<GrantedAuthority> authorities= this.roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
 

@@ -15,7 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cliente")
-@CrossOrigin(origins= {"http://localhost:4200"})
+@CrossOrigin(origins= {"http://localhost:4200"},
+        allowedHeaders = {"Authorization","Content-type"},
+        methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE,RequestMethod.OPTIONS}
+        )
 public class ClienteRestController {
 
     @Autowired

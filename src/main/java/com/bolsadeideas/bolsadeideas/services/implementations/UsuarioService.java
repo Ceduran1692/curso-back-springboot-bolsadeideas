@@ -1,6 +1,7 @@
 package com.bolsadeideas.bolsadeideas.services.implementations;
 
 import com.bolsadeideas.bolsadeideas.models.dao.IUsuarioDao;
+import com.bolsadeideas.bolsadeideas.models.entity.Role;
 import com.bolsadeideas.bolsadeideas.models.entity.Usuario;
 import com.bolsadeideas.bolsadeideas.services.interfaces.IUsuarioService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,10 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
     private IUsuarioDao usuarioDao;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Usuario usuario= usuarioDao.findByUsername(username).get();
+        Usuario usuario= this.findUserByUsername(username);
 
         if(usuario == null){
             String mensaje= "Error en el login: no existe el usuario "+ username +"en el sistema";
@@ -35,7 +37,9 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
             throw  new UsernameNotFoundException(mensaje);
         }
 
-        return usuario;
+
+
+        return new User(usuario.getUsername(),usuario.getPassword(),usuario.isEnabled(),usuario.isAccountNonExpired(),usuario.isCredentialsNonExpired(),usuario.isAccountNonLocked(),this.getAuthoritiesByUsername(username));
     }
 
 
@@ -44,4 +48,22 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
     public Usuario findUserByUsername(String username) {
         return usuarioDao.findByUsername(username).get();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GrantedAuthority> getAuthoritiesByUsername(String username) {
+        log.info("getAuthoritiesByUsername - IN");
+        List<Role> roles= this.usuarioDao.findRolesByUsername(username);
+
+        log.info("roles: "+ roles.size());
+        List<GrantedAuthority> authorities= roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+
+
+        log.info("getAuthoritiesByUsername - OUT");
+        return authorities;
+    }
+
+
 }

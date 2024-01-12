@@ -2,6 +2,7 @@ package com.bolsadeideas.bolsadeideas.services.implementations;
 
 import com.bolsadeideas.bolsadeideas.models.entity.Usuario;
 import com.bolsadeideas.bolsadeideas.services.interfaces.IJwtService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -37,7 +39,7 @@ public class JwtService implements IJwtService {
         ;
     }
 
-    private Key generateKey() {
+    private SecretKey generateKey() {
         byte[] byteKey= Decoders.BASE64.decode(SECRET_KEY);
 
         return Keys.hmacShaKeyFor(byteKey);
@@ -50,6 +52,25 @@ public class JwtService implements IJwtService {
     private Date getExpiration(){
         return new Date(getIssuedAt().getTime() + (EXPIRATION_MINUTES * 60 * 1000));
     }
+
+
+    @Override
+    public String extractUsername(String jwt) {
+        return extractAllClaims(jwt).getSubject();
+    }
+
+    private Claims extractAllClaims(String jwt) {
+        return Jwts
+                .parser()
+                .verifyWith(generateKey())
+                .build()
+                    .parseSignedClaims(jwt)
+                    .getPayload();
+
+    }
+
+
+
 
 
 }

@@ -244,17 +244,26 @@ public class ClienteService implements IClienteService {
 
     @Override
     public ResponseEntity upload(MultipartFile archivo, Long id) {
+        log.info("upload() - IN");
         Map<String, Object> response = new HashMap<>();
         String msg;
         String error;
         HttpStatus status;
         try {
+            log.info("archivo: "+ archivo.isEmpty());
             if (!archivo.isEmpty()){
                 Cliente cliente = clientedao.findById(id).get();
+                log.info("cliente: " + cliente.getNombre());
                 if(cliente != null){
-                    fileService.eliminar(cliente.getFoto());
+                    if(cliente.getFoto() != null) {
+                        log.info("elimino");
+                        fileService.eliminar(cliente.getFoto());
+                    }
+                    log.info("agrego");
                     cliente.setFoto(fileService.copiar(archivo));
+                    log.info("subo");
                     clientedao.save(cliente);
+                    log.info("respondo");
                     status = HttpStatus.OK;
                     response.put("value", cliente);
                 }else{
@@ -283,6 +292,7 @@ public class ClienteService implements IClienteService {
             response.put("error", error);
         }
 
+        log.info("upload() - OUT");
         return new ResponseEntity<Map<String, Object>>(response,status);
     }
 
