@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name= "clientes")
@@ -43,6 +44,9 @@ public class Cliente implements Serializable {
     @NotNull(message = "La region no puede ser nula")
     @JsonIgnoreProperties({"HibernateLazyInitializer","handler"})
     private Region region;
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "cliente",cascade = CascadeType.ALL)
+    private List<Factura> facturas;
 
     public String getFoto() {
         return foto;
