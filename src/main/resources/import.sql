@@ -34,5 +34,11 @@ INSERT INTO clientes (nombre, apellido, email, create_at, region_id) VALUES ('Ju
 INSERT INTO clientes (nombre, apellido, email, create_at, region_id) VALUES ('Max', 'Gómez', 'max.gomez@email.com', '2025-09-25', 3);
 INSERT INTO clientes (nombre, apellido, email, create_at, region_id) VALUES ('Isabella', 'Ruiz', 'isabella.ruiz@email.com', '2025-10-30', 4);
 
+INSERT INTO roles(name) VALUES('ROLE_ADMINISTRATOR');
+INSERT INTO roles(name) VALUES('ROLE_USER');
 
+INSERT INTO usuarios(nombre,apellido, email, password, username) values ('Admin_nombre', 'Admin_apellido', 'admin@email.com','$2a$10$2Wfttbut6Doz7vsjh6BpvuM5V6yFhUswizRZH0fqkI.cnGwD93uqe', 'admin1');
+INSERT INTO usuarios(nombre,apellido, email  , password, username) values ('User_nombre', 'User_apellido', 'user@email.com','$2a$10$0oIwnoIm/abTUqqOZSYLjOkPof9Nk3Hd2iSHkDX.V55XJTNZUICea','user1');
 
+INSERT INTO usuarios_roles(usuario_id, role_id) values (1,1);
+INSERT INTO usuarios_roles(usuario_id, role_id) values (2,2);
