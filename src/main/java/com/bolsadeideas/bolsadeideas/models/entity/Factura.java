@@ -6,7 +6,9 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -32,8 +34,19 @@ public class Factura implements Serializable {
     @JsonIgnoreProperties({"HibernateLazyInitializer","handler"})
     private Cliente cliente;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "factura_id")
+    private List<ItemFactura> items;
+
+    public Factura() {
+        this.items = new ArrayList<ItemFactura>();
+    }
+
     @PrePersist
     private void prePersist(){
         createAt= new Date();
     }
+
+
+
 }
